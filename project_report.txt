@@ -1,0 +1,84 @@
+﻿CSCB58 Project Report: Summer 2019
+
+
+Team Member A
+-------------
+First Name: Raha
+Last Name: Gharadaghi
+Student Number: 1005150382
+UofT E-mail Address: raha.gharadaghi@mail.utoronto.ca
+
+
+
+
+Team Member B
+-------------
+First Name: Aaren
+Last Name: Chu
+Student Number 1003898801
+UofT E-mail Address: aaren.chu@mail.utoronto.ca
+
+
+Project Plan
+--------
+
+
+Project Title: DODGE
+
+
+
+
+Provide a one paragraph description of your project:
+The program is a game where the player, represented by a circle of one colour, has to dodge enemies, represented by circles of a distinctly different colour. The player’s score is gauged by how long the player has successfully avoided colliding with an enemy within a certain timeframe. If the player does collide with an enemy, their score is reset to 0. However, the score will continue increasing until the time is up. The player sprite is controlled by the arrow keys. The score and timer are displayed on the HEX displays.
+
+
+What is your plan for the first week?
+To implement:
+* The main display screen 
+* The structure of the player circle object (i.e. color, position on screen etc.)
+* The movement behavior of the player circle (i.e. changing position on screen in 4 directions)
+* The control mechanism (i.e. mapping the keyboard arrow keys to the movement behavior)
+
+
+What is your plan for the second week?
+To implement: 
+* The structure of the enemy circle objects (i.e. color, position on screen etc.)
+* The movement behavior of the enemy circles (i.e. changing position on screen randomly)
+* The detection of collision between enemy circles and player circle(i.e. calculating the distance between the two different circles and resetting the score to only if a collision has occurred)
+* The functionality of timer and score 
+
+
+What is your plan for the third week?
+* Continually testing the program to cover all edge cases and everything in between
+* Getting ready for presentation of the finalized version of the game
+
+
+What is your backup plan if things don't work out as planned?
+* Keeping the general features that already work as a basis while simplifying some of the game mechanisms (e.g. having one enemy object instead of multiple)
+* Removing the score and timer and instead the HEX displays only display a certain number of lives that when the number is 0 then the game will be over.
+
+Weekly Reports
+--------------
+<In this space, provide a report each week of what worked and what didn't, and what (if any) changes were made to your proposal)>
+
+
+[This is an example of a report where things didn't go so well.]
+Week 1: 
+	We added and tested the sensors and the main FSM. 
+	The distance sensor we had intended to use didn't work as expected (wasn't precise enough at further distances, only seems to work accurately within 5-10cm), so instead we've decided to change the project to use a light sensor instead.
+	Had trouble getting the FSM to work (kept getting stuck in state 101, took longer to debug than expected), so we may not be able to add the high score feature. We have updated that in the project description as an optional feature.
+
+
+
+References
+----------
+<In this space clearly indicate all external sources used in this project. If you used anyone else's code (from previous B58 projects or other sources) clearly indicate what you used and where you found it. Usage of any material not credited in this space will be considered plagiarism. It is absolutely OK and expected to update this section as you progress in the projected.
+
+Make sure to document what you added on top of the existing work, especially if you work with a previous project. What is it that YOU added?>
+
+
+
+Repo & Video
+------------
+Git Repository:
+https://github.com/aarenchu/DODGE.git
