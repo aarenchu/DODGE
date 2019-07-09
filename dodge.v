@@ -31,7 +31,7 @@ module dodge
 	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
 	output	[9:0]	VGA_B;   				//	VGA Blue[9:0]
-	output [7:0] LEDR;
+	output [17:0] LEDR;
 	output [6:0] LEDG;
 	
 	
@@ -90,7 +90,8 @@ module dodge
 		.enable(cntwire),  
     	.x_result(x),
 		.y_result(y),
-		.c_result(colour)
+		.c_result(colour),
+		.ledr(LEDR[17:14])
 	);
 
     // Instansiate FSM control
@@ -191,7 +192,8 @@ module datapath(
 	input enable,  //for counter
     output reg [7:0] x_result,
 	output reg [6:0] y_result,
-	output reg [2:0] c_result
+	output reg [2:0] c_result,
+	output [3:0] ledr
 	);
 	// input registers
     reg [7:0] x;
@@ -223,6 +225,8 @@ module datapath(
 		.enable(enable),
 		.q(counter)
 	);
+	
+	assign ledr = counter;
 	
 	// Output result register
     always@(posedge clk) begin
