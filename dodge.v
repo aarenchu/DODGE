@@ -26,7 +26,7 @@ module dodge
 	output			VGA_CLK;   				//	VGA Clock
 	output			VGA_HS;					//	VGA H_SYNC
 	output			VGA_VS;					//	VGA V_SYNC
-	output			VGA_BLANK_N;				//	VGA BLANK
+	output			VGA_BLANK_N;			//	VGA BLANK
 	output			VGA_SYNC_N;				//	VGA SYNC
 	output	[9:0]	VGA_R;   				//	VGA Red[9:0]
 	output	[9:0]	VGA_G;	 				//	VGA Green[9:0]
@@ -74,7 +74,8 @@ module dodge
 			
 	// Put your code here. Your code should produce signals x,y,colour and writeEn/plot
 	// for the VGA controller, in addition to any other functionality your design may require.
-    
+	 
+	 
     // Instansiate datapath
 	datapath d0(
 		.clk(CLOCK_50),
@@ -144,12 +145,12 @@ module FSM(
     always @(*)
     begin: enable_signals
         // By default make all our signals 0
-        ld_x = 1'b0;
-        ld_y = 1'b0;
-        ld_c = 1'b0;
-        ldout_x = 1'b0;
-        ldout_y = 1'b0;
-		ldout_c = 1'b0;
+			ld_x = 1'b0;
+			ld_y = 1'b0;
+			ld_c = 1'b0;
+			ldout_x = 1'b0;
+			ldout_y = 1'b0;
+			ldout_c = 1'b0;
 
         case (current_state)
             S_LOAD_X: begin
@@ -218,6 +219,7 @@ module datapath(
                 c <= clr_in; // if ld_c is high load from clr_in
         end
     end
+	 
 	// Counter
 	counter c0(
 		.reset(resetn),
@@ -226,22 +228,40 @@ module datapath(
 		.q(counter)
 	);
 	
-	assign ledr = counter;
-	
-	// Output result register
-    always@(posedge clk) begin
-        if(!resetn) begin
-            x_result <= 8'b0; 
-			y_result <= 7'b0;
-			c_result <= 3'b0;
-        end
+	// Output result
+    always@(posedge clk) 
+	 begin
+        if(!resetn) 
+				begin
+					x_result <= 8'b0; 
+					y_result <= 7'b0;
+					c_result <= 3'b0;
+				end
         else 
             if(ldout_x)
-            	x_result <= x + counter[1:0]; //add least sig bits to x
-			if(ldout_y)
-				y_result <= y + counter[3:2]; //add most sig bits to y
+            	x_result <= counter[1:0]; //add least sig bits to x
+				if(ldout_y)
+					y_result <= counter[3:2]; //add most sig bits to y
 				c_result <= c;
     end
+endmodule
+
+module twobit_counter(
+
+	input reset,
+	input clock,
+	input enable,
+	output reg [1:0] q);
+	
+	always @(posedge clock) // triggered every time clock rises
+	begin
+		if (!reset)
+			q <= 0; // set q to 0
+		else if (q == 2'b11) // ...otherwise if q is the maximum counter value
+			q <= 0; // reset q to 0
+		else if (enable == 1'b1) // ...otherwise update q (only when Enable is 1)
+			q <= q + 1'b1; // increment q	
+end
 endmodule
 
 module counter (clock, reset, enable, q);
