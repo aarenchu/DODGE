@@ -34,18 +34,18 @@ The program is a game where the player, represented by a square of one colour, h
 
 What is your plan for the first week?
 To implement:
-* The main display screen 
+* The main display screen
 * The structure of the player circle object (i.e. color, position on screen etc.)
 * The movement behavior of the player circle (i.e. changing position on screen in 4 directions)
 * The control mechanism (i.e. mapping the keyboard arrow keys to the movement behavior)
 
 
 What is your plan for the second week?
-To implement: 
+To implement:
 * The structure of the enemy circle objects (i.e. color, position on screen etc.)
 * The movement behavior of the enemy circles (i.e. changing position on screen randomly)
 * The detection of collision between enemy circles and player circle(i.e. calculating the distance between the two different circles and resetting the score to only if a collision has occurred)
-* The functionality of timer and score 
+* The functionality of timer and score
 
 
 What is your plan for the third week?
@@ -61,13 +61,8 @@ Weekly Reports
 --------------
 <In this space, provide a report each week of what worked and what didn't, and what (if any) changes were made to your proposal)>
 
-
-[This is an example of a report where things didn't go so well.]
-Week 1: 
-	We added and tested the sensors and the main FSM. 
-	The distance sensor we had intended to use didn't work as expected (wasn't precise enough at further distances, only seems to work accurately within 5-10cm), so instead we've decided to change the project to use a light sensor instead.
-	Had trouble getting the FSM to work (kept getting stuck in state 101, took longer to debug than expected), so we may not be able to add the high score feature. We have updated that in the project description as an optional feature.
-
+Week 1:
+    We came up with an outline for the various elements of the project and reviewed other projects to see if they have any matching features we can use to expand on them. Also, we debugged the display from lab 6 to incorporate the draw mechanism of our game into the code that we already have. We are still working on putting together the features of the player object. 
 
 
 References
@@ -82,3 +77,6 @@ Repo & Video
 ------------
 Git Repository:
 https://github.com/aarenchu/DODGE.git
+
+
+
