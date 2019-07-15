@@ -42,9 +42,10 @@ module dodge
 	wire [2:0] colour;
 	wire [7:0] x;
 	wire [6:0] y;
-	wire writeEn;
-	wire cntwire, ld_xw, ld_yw, ld_cw, ldout_xw,ldout_yw,ldout_cw;
+	wire isDone;
+	wire ld_xw, ld_yw, ld_cw, ld_alu_out, alu_op;
 
+	
 	assign LEDR[7:0] = x;
 	assign LEDG[6:0] = y;
 	
@@ -57,7 +58,7 @@ module dodge
 			.colour(colour),
 			.x(x),
 			.y(y),
-			.plot(writeEn),
+			.plot(out),
 			/* Signals for the DAC to drive the monitor. */
 			.VGA_R(VGA_R),
 			.VGA_G(VGA_G),
@@ -82,33 +83,31 @@ module dodge
     	.resetn(resetn),
 		.data_in(SW[6:0]),
 		.clr_in(SW[9:7]),
-		.ldout_x(ldout_xw),
-		.ldout_y(ldout_yw),
-		.ldout_c(ldout_cw), 
     	.ld_x(ld_xw),
 		.ld_y(ld_yw),
-		.ld_c(ld_cw), 
-		.enable(cntwire),  
+		.ld_c(ld_cw),
+		.out(out),
+		.alu_op(alu_op),
+		.ld_alu_out(ld_alu_out),
     	.x_result(x),
 		.y_result(y),
 		.c_result(colour),
-		.ledr(LEDR[17:14])
+		.done(isDone)
 	);
 
     // Instansiate FSM control
-    FSM c0(
+    FSM f0(
 		.clk(CLOCK_50),
     	.resetn(resetn),
     	.go(SW[15]),
 		.controlx(SW[16]),
-		.plot_signal(writeEn),
-		.cnt_signal(cntwire),
+		.done(isDone),
 		.ld_x(ld_xw),
 		.ld_y(ld_yw),
-		.ld_c(ld_cw),
-		.ldout_x(ldout_xw),
-		.ldout_y(ldout_yw),
-		.ldout_c(ldout_cw)
+		.ld_c(ld_cw), 
+		.out(out),
+		.alu_op(alu_op),
+		.ld_alu_out(ld_alu_out)
 	);
     
 endmodule
@@ -118,13 +117,13 @@ module FSM(
     input resetn,
     input go,
 	 input controlx,
-	output reg plot_signal, cnt_signal,
-	output reg  ld_x, ld_y, ld_c, ldout_x, ldout_y, ldout_c
+	 input done,
+	output reg  ld_x, ld_y, ld_c, out, alu_op, ld_alu_out
 	);
 	reg [5:0] current_state, next_state;
 	
 	//States
-	localparam S_LOAD_X = 5'd0, S_LOAD_X_WAIT = 5'd1, S_LOAD_Y = 5'd2, S_LOAD_Y_WAIT = 5'd3, S_CYCLE_0 = 5'd4, S_CYCLE_1 = 5'd5;
+	localparam S_LOAD_X = 5'd0, S_LOAD_X_WAIT = 5'd1, S_LOAD_Y = 5'd2, S_LOAD_Y_WAIT = 5'd3, S_DRAW = 5'd4, S_COUNT = 5'd5;
 	
 	//State Table
 	always@(*)
@@ -133,9 +132,9 @@ module FSM(
                 S_LOAD_X: next_state = controlx ? S_LOAD_X_WAIT : S_LOAD_X; // Loop in current state until value is input
                 S_LOAD_X_WAIT: next_state = controlx ? S_LOAD_X_WAIT : S_LOAD_Y; // Loop in current state until go signal goes low
                 S_LOAD_Y: next_state = go ? S_LOAD_Y_WAIT : S_LOAD_Y; // Loop in current state until value is input
-                S_LOAD_Y_WAIT: next_state = go ? S_LOAD_Y_WAIT : S_CYCLE_0; // Loop in current state until go signal goes low
-                S_CYCLE_0: next_state = S_CYCLE_1; 
-				S_CYCLE_1: next_state = S_LOAD_X; // Done, start over
+                S_LOAD_Y_WAIT: next_state = go ? S_LOAD_Y_WAIT : S_DRAW; // Loop in current state until go signal goes low
+                S_DRAW: next_state = S_COUNT; // Draw
+					 S_COUNT: next_state = done ? S_LOAD_X : S_DRAW; // Count until counter is done
                 
             default:     next_state = S_LOAD_X;
         endcase
@@ -148,27 +147,34 @@ module FSM(
 			ld_x = 1'b0;
 			ld_y = 1'b0;
 			ld_c = 1'b0;
-			ldout_x = 1'b0;
-			ldout_y = 1'b0;
-			ldout_c = 1'b0;
+			out = 1'b0;
+			alu_op = 1'b0;
+			ld_alu_out = 1'b0;
 
         case (current_state)
             S_LOAD_X: begin
                 ld_x = 1'b1;
+					 ld_alu_out = 1'b0;
+					 out = 1'b0;
+					 alu_op = 1'b0;
                 end
             S_LOAD_Y: begin
+					 ld_alu_out = 1'b0;
                 ld_y = 1'b1;
-				ld_c = 1'b1;
+					 ld_c = 1'b1;
+					 out = 1'b0;
+					 alu_op = 1'b0;
                 end
-            S_CYCLE_0: begin 
-                ldout_x= 1'b1; 
-                ldout_y = 1'b1; 
-                ldout_c = 1'b1;
+            S_DRAW: begin 
+                out = 1'b1;
+					 alu_op = 1'b0;
+					 ld_alu_out = 1'b0;
             	end
-			S_CYCLE_1: begin 
-                plot_signal = 1'b1; //to vga
-				cnt_signal = 1'b1; //to datapath
-            end
+				S_COUNT: begin 
+                out = 1'b0;
+					 alu_op = 1'b1;
+					 ld_alu_out = 1'b1;
+					end
         // default:    // don't need default since we already made sure all of our outputs were assigned a value at the start of the always block
         endcase
     end // enable_signals
@@ -184,25 +190,27 @@ module FSM(
 endmodule
 
 module datapath(
-	input clk,
+	 input clk,
     input resetn,
     input [6:0] data_in,
-	input [2:0] clr_in,
-    input ldout_x, ldout_y, ldout_c, 
-    input ld_x, ld_y, ld_c, 
-	input enable,  //for counter
+	 input [2:0] clr_in, 
+    input ld_x, ld_y, ld_c, out, alu_op, ld_alu_out, // signals from FSM 
     output reg [7:0] x_result,
-	output reg [6:0] y_result,
-	output reg [2:0] c_result,
-	output [3:0] ledr
+	 output reg [6:0] y_result,
+	 output reg [2:0] c_result,
+	 output done
 	);
 	// input registers
-    reg [7:0] x;
+   reg [7:0] x;
 	reg [6:0] y;
 	reg [2:0] c;
 
 	wire [3:0] counter;
-
+	
+	// output of the ALU
+	reg [7:0] x_alu_out;
+	reg [6:0] y_alu_out;
+	
 	// Input Logic
     always@(posedge clk) begin
         if(!resetn) begin
@@ -212,9 +220,9 @@ module datapath(
         end
         else begin
             if(ld_x)
-                x <= data_in; // if ld_x is high load from data_in
+                x <= ld_alu_out ? x_alu_out : {1'b0, data_in}; // if ld_x is high load from alu if ld_alu_out is high
             if(ld_y)
-                y <= data_in; // if ld_y is high load from data_in
+                y <= ld_alu_out ? y_alu_out: data_in; // if ld_y is high load from alu if ld_alu_out is high
             if(ld_c)
                 c <= clr_in; // if ld_c is high load from clr_in
         end
@@ -224,9 +232,17 @@ module datapath(
 	counter c0(
 		.reset(resetn),
 		.clock(clk),
-		.enable(enable),
-		.q(counter)
+		.enable(alu_op),
+		.q(counter),
+		.done(done)
 	);
+	
+	// ALU
+	always @(*)
+    begin : ALU
+        x_alu_out = counter[1:0];
+		  y_alu_out = counter[3:2];
+    end
 	
 	// Output result
     always@(posedge clk) 
@@ -238,10 +254,10 @@ module datapath(
 					c_result <= 3'b0;
 				end
         else 
-            if(ldout_x)
-            	x_result <= counter[1:0]; //add least sig bits to x
-				if(ldout_y)
-					y_result <= counter[3:2]; //add most sig bits to y
+            if(out)begin
+            	x_result <= x_alu_out; //add least sig bits to x
+					y_result <= y_alu_out; //add most sig bits to y
+				end
 				c_result <= c;
     end
 endmodule
@@ -264,18 +280,25 @@ module twobit_counter(
 end
 endmodule
 
-module counter (clock, reset, enable, q);
+module counter (clock, reset, enable, q, done);
 	input reset;
 	input clock;
 	input enable;
 	output reg [3:0] q;
+	output reg done;
 	always @(posedge clock) // triggered every time clock rises
 	begin
-		if (!reset)
+		if (!reset) begin
 			q <= 0; // set q to 0
-		else if (q == 4'b1111) // ...otherwise if q is the maximum counter value
+			done <= 1'b0;
+			end
+		else if (q == 4'b1111) begin // ...otherwise if q is the maximum counter value
 			q <= 0; // reset q to 0
-		else if (enable == 1'b1) // ...otherwise update q (only when Enable is 1)
-			q <= q + 1'b1; // increment q	
-end
+			done <= 1'b1;
+			end
+		else if (enable == 1'b1) begin // ...otherwise update q (only when Enable is 1)
+			q <= q + 1'b1; // increment q
+			done <= 1'b0;
+			end
+	end
 endmodule
