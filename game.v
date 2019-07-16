@@ -69,6 +69,7 @@ module game
   
   // counter for drawing 
   reg [17:0] counter;
+  // reg [17:0] erase_counter;
     
   // current state indicator
   reg [5:0] current_state;
@@ -109,11 +110,21 @@ module game
                 end
             end
             
-            MOVE_PLAYER: begin
+            MOVE_PLAYER: begin 
+	    // ERASE PLAYER by drawing a black square at current x,y?
+	    // if (erase_counter < 8'b10000000) begin 
+                //colour = 3'b000;
+                //x = player_x + erase_counter [3:0];
+                //y = player_y + erase_counter [7:4];
+                //erase_counter = erase_counter + 1'b1;
+                //end 
+	    // else begin
+                //erase_counter = 18'b0;
+                //end
+	    
             // update position of the player if needed (i.e. based on key input)
-            // key 0-left 1-right 2-up 3-down 
-            // ERASE PLAYER ?
-            assign mv_left = ~KEY[0];
+            // key 0-left 1-right 2-up 3-down
+	    assign mv_left = ~KEY[0];
             assign mv_right= ~KEY[1];
             assign mv_up = ~KEY[2];
             assign mv_down = ~KEY[3];
@@ -128,7 +139,7 @@ module game
                 end   
             if (mv_down && player_y < 7'd110) begin
                 player_y = player_y + player_speed;
-                end   
+                end
             current_state = DRAW_PLAYER;
             end
             
