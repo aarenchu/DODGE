@@ -240,7 +240,7 @@ module datapath(
 	// ALU
 	always @(*)
     begin : ALU
-        x_alu_out = counter[1:0];
+          x_alu_out = counter[1:0];
 		  y_alu_out = counter[3:2];
     end
 	
@@ -255,8 +255,10 @@ module datapath(
 				end
         else 
             if(out)begin
-            	x_result <= x_alu_out; //add least sig bits to x
-					y_result <= y_alu_out; //add most sig bits to y
+            		x_result <= x; // reset to og values
+            		y_result <= y;
+            	    x_result <= x + x_alu_out; //add least sig bits to x
+					y_result <= y + y_alu_out; //add most sig bits to y
 				end
 				c_result <= c;
     end
