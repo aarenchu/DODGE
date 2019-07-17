@@ -197,15 +197,15 @@ endmodule
 // module counts a number of clock ticks to simulate 60 frames per second
 // send go signal each frame counted
 module clock(input clock, output clk);
-	reg [19:0] frame_counter;
-	reg frame;
+reg [19:0] frame_counter;
+reg frame;
 	always@(posedge clock)
-    	begin
-        	if (frame_counter == 20'b00000000000000000000) begin
+    begin
+        if (frame_counter == 20'b00000000000000000000) begin
 		  frame_counter = 20'b11001011011100110100;
 		  frame = 1'b1;
 		  end
-        	else begin
+        else begin
 			frame_counter = frame_counter - 1'b1;
 			frame = 1'b0;
 		  end
