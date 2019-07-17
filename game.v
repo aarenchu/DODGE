@@ -21,14 +21,14 @@ module game
 	input [17:0] SW;
 
 	// VGA OUTPUT
-	output		 VGA_CLK;   				//	VGA Clock
-	output		 VGA_HS;					//	VGA H_SYNC
-	output		 VGA_VS;					//	VGA V_SYNC
-	output		 VGA_BLANK_N;			//	VGA BLANK
-	output		 VGA_SYNC_N;				//	VGA SYNC
-	output [9:0] VGA_R;   				//	VGA Red[9:0]
-	output [9:0] VGA_G;	 				//	VGA Green[9:0]
-	output [9:0] VGA_B;   				//	VGA Blue[9:0]
+	output			VGA_CLK;   				//	VGA Clock
+	output			VGA_HS;					//	VGA H_SYNC
+	output			VGA_VS;					//	VGA V_SYNC
+	output			VGA_BLANK_N;			//	VGA BLANK
+	output			VGA_SYNC_N;				//	VGA SYNC
+	output [9:0]	VGA_R;   				//	VGA Red[9:0]
+	output [9:0]	VGA_G;	 				//	VGA Green[9:0]
+	output [9:0]	VGA_B;   				//	VGA Blue[9:0]
 	output [7:0] LEDR;
 	
 	// VGA INSTANTIATION
@@ -54,50 +54,47 @@ module game
 		defparam VGA.BACKGROUND_IMAGE = "black.mif";
 		
 
-    //**************************
-    //* DATA STORAGE VARIABLES *
-    //**************************
-    // colour, x and y that will go into VGA for display
-    reg [2:0] colour;
-    reg [7:0] x;
-    reg [6:0] y;
+  //**************************
+  //* DATA STORAGE VARIABLES *
+  //**************************
+	// colour, x and y that will go into VGA for display
+	reg [2:0] colour;
+  reg [7:0] x;
+  reg [6:0] y;
 
-    assign LEDR[7:0] = x;
-    // player object position and speed parameters
-    reg [7:0] player_x;
-    reg [6:0] player_y;
-    reg player_speed;
-    reg mv_left;
-    reg mv_right;
-    reg mv_up;
-    reg mv_down;
+  assign LEDR[7:0] = x;
+  // player object position and speed parameters
+	reg [7:0] player_x;
+	reg [6:0] player_y;
+  reg player_speed;
+  reg mv_left;
+  reg mv_right;
+  reg mv_up;
+  reg mv_down;
   
-    // counter for drawing 
-    reg [17:0] counter;
-    // reg [17:0] erase_counter;
+  // counter for drawing 
+  reg [17:0] counter;
+  // reg [17:0] erase_counter;
     
-    // current state indicator
-    reg [5:0] current_state;
-    reg [5:0] next_state;
-    // transition signals
-    reg start;
-    reg s1;
-    reg s2;
-    reg s3;
-    reg s4;
-    reg s5;
+  // current state indicator
+  reg [5:0] current_state;
 
+<<<<<<< HEAD
     
+=======
+>>>>>>> e291ff41617a48e92916b389e2db3cf53e6f9910
   
     //**********
     //* STATES *
     //**********
-    localparam  
-				LOAD_PLAYER = 6'b000000,
-				WAIT= 6'b000001,
-				ERASE_PLAYER = 6'b000010, 
-                MOVE_PLAYER = 6'b000011,   
-                DRAW_PLAYER = 6'b000100;
+    localparam SET_X = 6'b000000,
+					RESET = 6'b000001,
+					LOAD_PLAYER = 6'b000010,
+					WAIT= 6'b000011,
+					ERASE_PLAYER = 6'b000100, 
+               MOVE_PLAYER = 6'b000101,   
+               DRAW_PLAYER = 6'b000110
+               ;
 
     //************************
     //* STATES CONTROL LOGIC *
@@ -107,6 +104,7 @@ module game
     // rate divider, delay before redraw
 	wire frame;
 	clock(.clock(CLOCK_50), .clk(frame));
+<<<<<<< HEAD
 	
     //State Table
 	always@(*)
@@ -123,35 +121,54 @@ module game
 
 	always @(*)
     begin: enable_signals
+=======
+
+	 
+	 always @(posedge CLOCK_50)
+    begin
+>>>>>>> e291ff41617a48e92916b389e2db3cf53e6f9910
         // Initialize values 
 			colour = 3'b000;
             x = 7'b0000000;
             y = 6'b000000;
-        case (current_state)
+        
+		if (~KEY[2])
+			current_state = RESET;
+      case (current_state)
+				
+				RESET: begin
+				if (counter < 17'b10000000000000000) begin
+						x = counter[7:0];
+						y = counter[16:8];
+						counter = counter + 1'b1;
+						end
+					else begin
+						counter= 8'b00000000;
+						current_state = LOAD_PLAYER;
+					end
+end
             LOAD_PLAYER: begin
-                if (counter < 8'b00010000) begin 
-                // set original position of the player and draw using counter
-				    player_x = 8'd80;
-                    player_y = 7'd50;
-                    colour = 3'b010;
-                    player_speed = 1'b1;
-                    x = player_x + counter [1:0];
-                    y = player_y + counter [3:2];
-                    counter = counter + 1'b1;
-                    end 
-                else begin
-                    counter = 18'b0;
-                    s1 = 1'b1;
-                    end
+            if (counter < 8'b00010000) begin 
+            // set original position of the player and draw using counter
+					player_x = 8'd80;
+                player_y = 7'd50;
+                colour = 3'b010;
+                player_speed = 1'b1;
+                x = player_x + counter [1:0];
+                y = player_y + counter [3:2];
+                counter = counter + 1'b1;
+                end 
+            else begin
+                counter = 18'b0;
+                current_state = WAIT;
+                end
             end
             
-			WAIT: begin
+				WAIT: begin
 				// wait a frame
-				if (frame) begin
-					s2 = 1'b1;
-                    s1 = 1'b0;
-				    end
-            end
+				if (frame)
+					current_state = ERASE_PLAYER;
+				end
 				
             ERASE_PLAYER: begin
 				if (counter < 8'b00010000) begin 
@@ -159,48 +176,46 @@ module game
 	                x = player_x + counter [1:0];
 	                y = player_y + counter [3:2];
 	                counter = counter + 1'b1;
-                    end 
+                end 
 				else begin
-                    counter = 18'b0;
-                    s3 = 1'b1;
-                    s2 = 1'b0;
+                counter = 18'b0;
+                current_state = MOVE_PLAYER;
                 end
             end
 
             MOVE_PLAYER: begin 
-                // update position of the player if needed (i.e. based on key input)
-                // key 0-left 1-right 2-up 3-down
-                if (~KEY[0] && player_x > 8'd10) begin
-                    player_x = player_x - player_speed;
-                    end
-                if (~KEY[1] && player_x < 8'd150) begin
-                    player_x = player_x + player_speed;
-                    end   
-                // if (~KEY[2] && player_y > 7'd10) begin
-                    // player_y = player_y - player_speed;
-                    // end   
-                if (~KEY[3] && player_y < 7'd110) begin
-                    player_y = player_y + player_speed;
-                    end
-                s4 = 1'b1;
-                s3 = 1'b0;    
+            // update position of the player if needed (i.e. based on key input)
+            // key 0-left 1-right 2-up 3-down
+            if (~KEY[0] && player_x > 8'd10) begin
+                player_x = player_x - player_speed;
+                end
+            if (~KEY[1] && player_x < 8'd150) begin
+                player_x = player_x + player_speed;
+                end   
+            // if (~KEY[2] && player_y > 7'd10) begin
+                // player_y = player_y - player_speed;
+                // end   
+            if (~KEY[3] && player_y < 7'd110) begin
+                player_y = player_y + player_speed;
+                end
+            current_state = DRAW_PLAYER;
             end
             
             DRAW_PLAYER: begin 
-                if (counter < 8'b00010000) begin 
-                // draw the player using counter
-                    x = player_x + counter [1:0];
-                    y = player_y + counter [3:2];
-                    counter = counter + 1'b1;
-                    end 
-                else begin
-                    counter = 18'b0;
-                    s3 = 1'b1;
-                    s4 = 1'b0;
-                    end
+            if (counter < 8'b00010000) begin 
+            // draw the player using counter
+                x = player_x + counter [1:0];
+                y = player_y + counter [3:2];
+                counter = counter + 1'b1;
+                end 
+            else begin
+                counter = 18'b0;
+                current_state = MOVE_PLAYER;
+                end
 			end
         endcase
     end
+<<<<<<< HEAD
     
     always@(posedge CLOCK_50)
     begin: state_FFs
@@ -210,6 +225,8 @@ module game
             current_state <= next_state;
     end // state_FFS
 
+=======
+>>>>>>> e291ff41617a48e92916b389e2db3cf53e6f9910
 endmodule
 
 // module counts a number of clock ticks to simulate 60 frames per second
