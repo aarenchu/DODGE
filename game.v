@@ -87,7 +87,7 @@ module game
     reg s4;
     reg s5;
 
-    start = ~KEY[2];
+    
   
     //**********
     //* STATES *
@@ -107,13 +107,12 @@ module game
     // rate divider, delay before redraw
 	wire frame;
 	clock(.clock(CLOCK_50), .clk(frame));
-
-	 
+	
     //State Table
 	always@(*)
     begin: state_table 
         case (current_state)
-            LOAD_PLAYER: next_state = start ? LOAD_PLAYER : WAIT; // Loop in current state until value is input
+            LOAD_PLAYER: next_state = ~SW[17] ? LOAD_PLAYER : WAIT; // Loop in current state until value is input
             WAIT: next_state = s1 ? WAIT : ERASE_PLAYER; // Loop in current state until go signal goes low
             ERASE_PLAYER: next_state = s2 ? ERASE_PLAYER : MOVE_PLAYER; // Loop in current state until value is input
             MOVE_PLAYER: next_state = s3 ? MOVE_PLAYER : DRAW_PLAYER; // Loop in current state until go signal goes low
@@ -205,7 +204,7 @@ module game
     
     always@(posedge CLOCK_50)
     begin: state_FFs
-        if(start)
+        if(!SW[17])
             current_state <= LOAD_PLAYER;
         else
             current_state <= next_state;
