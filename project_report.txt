@@ -62,7 +62,9 @@ Weekly Reports
 <In this space, provide a report each week of what worked and what didn't, and what (if any) changes were made to your proposal)>
 
 Week 1:
-    We came up with an outline for the various elements of the project and reviewed other projects to see if they have any matching features we can use to expand on them. Also, we debugged the display from lab 6 to incorporate the draw mechanism of our game into the code that we already have. We are still working on putting together the features of the player object. 
+    We came up with an outline for the various elements of the project and reviewed other projects to see if they have any matching features we can use to expand on them. Also, we debugged the display from lab 6 to incorporate the draw mechanism of our game into the code that we already have. We are still working on putting together the features of the player object.
+Week 2:
+    We worked on the implementation of the player’s movement with the keys. We are experiencing some problems in terms of transition between states and we are working on debugging the issues we're facing, so we have turned to previous projects to see where our code may be failing.
 
 
 References
@@ -73,10 +75,14 @@ Make sure to document what you added on top of the existing work, especially if 
 
 
 
+
 Repo & Video
 ------------
 Git Repository:
 https://github.com/aarenchu/DODGE.git
+
+
+
 
 
 
