@@ -16,10 +16,10 @@ module dodge(CLOCK_50,
 					VGA_B					//	VGA Blue[9:0]
 		);
 	// Based off of Space Invaders by Matthew Chau and Zixiong Lin
-	// KEY[0] moves left
-	// KEY[1] moves up
-	// KEY[2] moves down
-	// KEY[3] moves right
+	// KEY[0] moves right
+	// KEY[1] moves down
+	// KEY[2] moves up
+	// KEY[3] moves leftt
 	// SW[17] turn on game
 	
 	input CLOCK_50;
