@@ -90,6 +90,7 @@ module dodge(CLOCK_50,
 	reg [7:0] A3_y;
 	reg [7:0] A4_x;
 	reg [7:0] A4_y;
+	// We added the following registers
 	reg [7:0] B_enemy_x;
 	reg [7:0] B_enemy_y;
 	reg [7:0] B1_x;
@@ -119,6 +120,7 @@ module dodge(CLOCK_50,
 	reg A2;
 	reg A3;
 	reg A4;
+	// we added the following registers
 	reg B1;
 	reg B2;
 	reg B3;
@@ -139,6 +141,7 @@ module dodge(CLOCK_50,
 	reg a2_right;
 	reg a3_right;
 	reg a4_right;
+	// we added the following registers
 	reg b1_right;
 	reg b2_right;
 	reg b3_right;
@@ -150,13 +153,15 @@ module dodge(CLOCK_50,
 
 	// keep track of direction of enemies
 	reg A_enemy_up;
+	// we added the following registers
 	reg B_enemy_up;
 	reg C_enemy_right;
 	reg D_enemy_right;
-	// keep track of level up dependent on timer. Increase level every 10s.
+	
+	// keep track of level up dependent on timer. Increase level every 10s. (we added this wire)
 	wire [1:0] lvl_up;
 
-	// timer/score on HEX0, HEX1, HEX2
+	// timer/score on HEX0, HEX1, HEX2 (we added this from FlappyBox by Alex Wong et al.
 	reg collided;
     wire [3:0] current_time_wire;
 	 
@@ -185,17 +190,17 @@ module dodge(CLOCK_50,
 	/***************************************
 	FSM and datapath begins
 	****************************************/
-	localparam  		RESET 			= 7'd30,
-				INIT_PLAYER 		= 7'd1,
+	localparam  RESET 			= 7'd30,
+				INIT_PLAYER 	= 7'd1,
 				INIT_A1 		= 7'd3,
 				INIT_A2 		= 7'd17,
 				INIT_A3 		= 7'd18,
 				INIT_A4 		= 7'd19,
 				WAIT			= 7'd4,
 
-				ERASE_PLAYER 		= 7'd5,
-				UPDATE_PLAYER 		= 7'd6,
-				DRAW_PLAYER 		= 7'd7,
+				ERASE_PLAYER 	= 7'd5,
+				UPDATE_PLAYER 	= 7'd6,
+				DRAW_PLAYER 	= 7'd7,
 
 				ERASE_A1 		= 7'd11,
 				UPDATE_A1 		= 7'd12,
@@ -217,54 +222,55 @@ module dodge(CLOCK_50,
 				ERASE_A_ENEMY 		= 7'd36,
 				UPDATE_A_ENEMY 		= 7'd37,
 				DRAW_A_ENEMY 		= 7'd38,
-				TEST_A_HIT 		= 7'd39,
-				INIT_B1 		= 7'd8,
-				INIT_B2 		= 7'd9,
-				INIT_B3 		= 7'd10,
-				INIT_B4 		= 7'd15,
+				TEST_A_HIT 			= 7'd39,
+				// we added the rest of these states
+				INIT_B1 			= 7'd8,
+				INIT_B2 			= 7'd9,
+				INIT_B3 			= 7'd10,
+				INIT_B4 			= 7'd15,
 				INIT_B_ENEMY 		= 7'd40,
 				ERASE_B_ENEMY 		= 7'd41,
 				UPDATE_B_ENEMY 		= 7'd42,
 				DRAW_B_ENEMY 		= 7'd43,
-				TEST_B_HIT 		= 7'd44,
-				ERASE_B1 		= 7'd45,
-				UPDATE_B1 		= 7'd46,
-				DRAW_B1			= 7'd47,
-				ERASE_B2 		= 7'd48,
-				UPDATE_B2 		= 7'd49,
-				DRAW_B2			= 7'd50,
-				ERASE_B3 		= 7'd51,
-				UPDATE_B3 		= 7'd52,
-				DRAW_B3			= 7'd53,
-				ERASE_B4 		= 7'd54,
-				UPDATE_B4 		= 7'd55,
-				DRAW_B4			= 7'd56,
-				INIT_C1 		= 7'd57,
-				INIT_C2 		= 7'd58,
-				INIT_D1 		= 7'd59,
-				INIT_D2 		= 7'd60,
+				TEST_B_HIT 			= 7'd44,
+				ERASE_B1 			= 7'd45,
+				UPDATE_B1 			= 7'd46,
+				DRAW_B1				= 7'd47,
+				ERASE_B2 			= 7'd48,
+				UPDATE_B2 			= 7'd49,
+				DRAW_B2				= 7'd50,
+				ERASE_B3 			= 7'd51,
+				UPDATE_B3 			= 7'd52,
+				DRAW_B3				= 7'd53,
+				ERASE_B4 			= 7'd54,
+				UPDATE_B4 			= 7'd55,
+				DRAW_B4				= 7'd56,
+				INIT_C1 			= 7'd57,
+				INIT_C2 			= 7'd58,
+				INIT_D1 			= 7'd59,
+				INIT_D2 			= 7'd60,
 				INIT_C_ENEMY 		= 7'd61,
 				ERASE_C_ENEMY 		= 7'd62,
 				UPDATE_C_ENEMY 		= 7'd63,
 				DRAW_C_ENEMY 		= 7'd64,
-				TEST_C_HIT 		= 7'd65,
-				ERASE_C1 		= 7'd66,
-				UPDATE_C1 		= 7'd67,
-				DRAW_C1			= 7'd68,
-				ERASE_C2 		= 7'd69,
-				UPDATE_C2 		= 7'd70,
-				DRAW_C2			= 7'd71,
-				ERASE_D1 		= 7'd72,
-				UPDATE_D1 		= 7'd73,
-				DRAW_D1			= 7'd74,
-				ERASE_D2 		= 7'd75,
-				UPDATE_D2 		= 7'd76,
-				DRAW_D2			= 7'd77,
+				TEST_C_HIT 			= 7'd65,
+				ERASE_C1 			= 7'd66,
+				UPDATE_C1 			= 7'd67,
+				DRAW_C1				= 7'd68,
+				ERASE_C2 			= 7'd69,
+				UPDATE_C2 			= 7'd70,
+				DRAW_C2				= 7'd71,
+				ERASE_D1 			= 7'd72,
+				UPDATE_D1 			= 7'd73,
+				DRAW_D1				= 7'd74,
+				ERASE_D2 			= 7'd75,
+				UPDATE_D2 			= 7'd76,
+				DRAW_D2				= 7'd77,
 				INIT_D_ENEMY 		= 7'd79,
 				ERASE_D_ENEMY		= 7'd80,
 				UPDATE_D_ENEMY 		= 7'd81,
 				DRAW_D_ENEMY 		= 7'd82,
-				TEST_D_HIT 		= 7'd83;
+				TEST_D_HIT 			= 7'd83;
 	
 	// for WAIT, delay before redrawing
 	wire frame;
@@ -277,7 +283,7 @@ module dodge(CLOCK_50,
 		x = 8'b00000000;
 		y = 8'b00000000;
 		
-		// turn on game
+		// turn on game, we switched the reset to a switch
 		if (~SW[17])
 			current_state = RESET;
 	
@@ -397,7 +403,7 @@ module dodge(CLOCK_50,
 					current_state = INIT_B1;
 					end
 				end
-			/* Initialize bottom bases and enemies */
+			/* Initialize bottom bases and enemies, we added these states */
 			INIT_B1: begin
 				if (draw_count < 8'b1000_0000) begin
 					B1_x = 8'd0;
@@ -416,7 +422,7 @@ module dodge(CLOCK_50,
 					end
 				end
 			INIT_B_ENEMY: begin
-				// initialize the  enemy
+				// initialize the enemy
 				B_enemy_x = 8'd8;
 				B_enemy_y = 8'd9;
 				B_enemy_up = 1'b0;	
@@ -482,7 +488,7 @@ module dodge(CLOCK_50,
 					current_state = INIT_C1;
 					end
 				end
-			/* Initialize left bases even though they don't start appearing until lvl 2 */
+			/* Initialize left bases even though they don't start appearing until lvl 2, we added these states */
 			INIT_C1: begin
 				if (draw_count < 8'b1000_0000) begin
 					C1_x = 8'd0;
@@ -533,7 +539,7 @@ module dodge(CLOCK_50,
 					current_state = INIT_D1;
 					end
 				end
-			/* Initialize right bases even though they don't start appearing until lvl 3 */
+			/* Initialize right bases even though they don't start appearing until lvl 3, we added these states */
 			INIT_D1: begin
 				if (draw_count < 8'b1000_0000) begin
 					D1_x = 8'd150;
@@ -615,6 +621,7 @@ module dodge(CLOCK_50,
 				if (~KEY[3] && p_x > 8'd30) begin // left
 					p_x = p_x - 1'b1;
 					end
+				// we added the vertical movement
 				if (~KEY[1] && p_y < 8'd90) begin // up
 					p_y = p_y + 1'b1;
 					end
@@ -670,14 +677,14 @@ module dodge(CLOCK_50,
 						end
 					
 					
-				if (A1 == 1'b1) begin
-					// if base is active, draw it
-					current_state = DRAW_A1;
-				end
-				else begin
-					// base inactive, so erase
-					current_state = ERASE_A2;
-				end
+					if (A1 == 1'b1) begin
+						// if base is active, draw it
+						current_state = DRAW_A1;
+					end
+					else begin
+						// base inactive, so erase
+						current_state = ERASE_A2;
+					end
 				
 				end
 			DRAW_A1: begin
@@ -852,7 +859,7 @@ module dodge(CLOCK_50,
 					current_state = ERASE_B1;
 					end
 				end
-			/* Main bottom base states */
+			/* Main bottom base states, we added these states */
 			ERASE_B1: begin
 				if (draw_count < 8'b1000_0000) begin
 					x = B1_x + draw_count[1:0];
@@ -1065,7 +1072,7 @@ module dodge(CLOCK_50,
 					end
 				end
 				
-			/* Main left base states */
+			/* Main left base states, we added these states */
 			ERASE_C1: begin
 				if (draw_count < 8'b1000_0000) begin
 					x = C1_x + draw_count[1:0];
@@ -1175,7 +1182,7 @@ module dodge(CLOCK_50,
 					current_state = ERASE_D1;
 					end
 				end
-			/* Main right base states */
+			/* Main right base states, we added these states */
 			ERASE_D1: begin
 				if (draw_count < 8'b1000_0000) begin
 					x = D1_x + draw_count[1:0];
@@ -1243,7 +1250,7 @@ module dodge(CLOCK_50,
 					end
 				end
 			UPDATE_D2: begin
-					// update new  position
+					// update new position
 					// make sure doesn't interfere with top and bottom bases
 					if (D2_y >= 8'd108) begin
 						d2_down = 1'b0;
@@ -1335,7 +1342,7 @@ module dodge(CLOCK_50,
 				if (((A_enemy_x + 4 <= p_x + 8) && (A_enemy_x + 4 >= p_x)) && ((A_enemy_y + 4 <= p_y + 4) && (A_enemy_y + 4 >= p_y)))
 					current_state = DEATH;
 				else begin
-					// set where the  enemy deploys from
+					// set where the enemy deploys from
 					// it deploys from the first active 
 					if (A1 == 1'b1) begin
 						A_enemy_x = A1_x + 8'd8;
@@ -1357,7 +1364,7 @@ module dodge(CLOCK_50,
 				end
 			end
 			
-			/* Main bottom enemy states */
+			/* Main bottom enemy states, we added these states */
 			ERASE_B_ENEMY: begin
 				if (draw_count < 8'b1000_0000) begin
 					x = B_enemy_x+ draw_count[1:0];
@@ -1433,7 +1440,7 @@ module dodge(CLOCK_50,
 				end
 			end
 
-			/* Main left enemy states */
+			/* Main left enemy states, we added these states */
 			ERASE_C_ENEMY: begin
 				// only go into these states at the right lvl
 				if (lvl_up < 2'd1)
@@ -1503,7 +1510,7 @@ module dodge(CLOCK_50,
 				end
 			end
 			
-			/* Main right enemy states */
+			/* Main right enemy states, we added these states */
 			ERASE_D_ENEMY: begin
 				// only enter states within the correct level
 				if (lvl_up < 2'd2)
@@ -1599,6 +1606,7 @@ endmodule
 // module counts a number of clock ticks to simulate 60 frames per second
 // send go signal each frame counted
 module frame_counter(input clock, output reg go);
+	// CREDIT TO: MATTHEW CHAU AND ZIXIONG LIN
 	reg [19:0] count;
 	// 50 000 000 / 60 frames = 833 333 seconds per frame
 	// 833 333 = 20'b11001011011100110100
